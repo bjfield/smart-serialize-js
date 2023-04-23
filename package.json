@@ -1,0 +1,36 @@
+{
+  "name": "smart-serialize-js",
+  "version": "0.1.0",
+  "description": "A fast stack-based serializer for JavaScript objects with depth and size limits",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bjfield/smart-serialize-js.git"
+  },
+  "keywords": [
+    "javascript",
+    "stringify",
+    "serialize",
+    "max",
+    "size",
+    "depth"
+  ],
+  "author": "Ben Field",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bjfield/smart-serialize-js/issues"
+  },
+  "homepage": "https://github.com/bjfield/smart-serialize-js#readme",
+  "devDependencies": {
+    "benchmark": "^2.1.4",
+    "eslint": "^8.39.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.7.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "jest": "^29.5.0"
+  }
+}
