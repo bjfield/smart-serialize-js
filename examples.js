@@ -27,9 +27,9 @@ const createObject = (breadth, depth = 0) => {
   return obj
 }
 
-/*
- * Visualize the way size and depth limits impact an object.
- */
+console.log()
+console.log('Visualize the way size and depth limits impact an object.')
+console.log('---------------------------------------------------------')
 
 const obj = ['0123456789', { a: 1, b: 2 }, { n: { n: { n: { n: { n: { n: { n: {} } } } } } } }, 12.345, { longLongLongKey: 0 }]
 const objLength = JSON.stringify(obj).length
@@ -38,9 +38,9 @@ for (let i = 0; i <= objLength; i++) {
   console.log('limit', i, ':', serialized, serialized.length)
 }
 
-/*
- * Compare with the performance of JSON.stringify.
- */
+console.log()
+console.log('Compare with the performance of JSON.stringify.')
+console.log('-----------------------------------------------')
 
 console.time('create 69863851 byte object')
 const targetObject = createObject(7, 7) // 69863851 bytes when stringified
@@ -62,3 +62,22 @@ suite
     console.log(`${fastestOption} is fastest`)
   })
   .run()
+
+console.log()
+console.log('Serialize unusual nodes.')
+console.log('------------------------')
+
+const oddNodes = []
+oddNodes.push(new Date())
+oddNodes.push(new Error('"hello"'))
+oddNodes.push(function () { return true }) // anonymous function
+oddNodes.push(function foo () { return true }) // named function
+oddNodes.push(/[a-z]+/gi)
+oddNodes.push(oddNodes) // circular reference
+oddNodes.push(`line1
+line2`) // multiline string
+// eslint-disable-next-line no-tabs
+oddNodes.push('	') // tab control character
+oddNodes.push('[') // does not interfere with enclosing brackets
+console.log(smartSerialize(oddNodes))
+console.log(JSON.parse(smartSerialize(oddNodes)))
