@@ -4,9 +4,15 @@
  * @param {Object} object - The object to serialize.
  * @param {number} [maxDepth=Infinity] - The maximum depth of nested objects or arrays to serialize.
  * @param {number} [maxSize=Infinity] - The maximum size in bytes of the serialized output.
+ * @param {function} [callback] - Function to execute when finished. Warning: returns immediately if callback is set.
  * @returns {string} The serialized string representation of the input object.
 */
-function smartSerialize (object, maxDepth = Infinity, maxSize = Infinity) {
+function smartSerialize (object, maxDepth = Infinity, maxSize = Infinity, callback) {
+  // When a callback is specified, the stack is split into serial batches of this size,
+  // allowing other application code to execute between batches.
+  const BATCH_SIZE = 10000
+
+  // Used to avoid following circular references
   const seen = new WeakSet()
 
   let size = 0
@@ -99,7 +105,7 @@ function smartSerialize (object, maxDepth = Infinity, maxSize = Infinity) {
 
   const stack = [[null, object, undefined, 0]] // key, value, index, depth
 
-  while (stack.length) {
+  function iterateStack (callback) {
     const [key, value, index, depth] = stack.pop()
     if (seen.has(value)) {
       addSize(20) // [circular reference]
@@ -145,6 +151,27 @@ function smartSerialize (object, maxDepth = Infinity, maxSize = Infinity) {
       render(key, value, index)
 
       if (index) addSize(1) // comma for indexes > 0
+    }
+  }
+
+  if (callback) {
+    function callbackStack () {
+      let i = 0
+      while (stack.length && i < BATCH_SIZE) {
+        iterateStack()
+        i++
+      }
+      if (stack.length) {
+        setTimeout(callbackStack) // breaks execution momentarily
+      } else {
+        callback(output)
+        return undefined
+      }
+    }
+    callbackStack()
+  } else {
+    while (stack.length) {
+      iterateStack()
     }
   }
 
